@@ -139,6 +139,7 @@ let timerInterval = null;
       watchId = null;
       clearInterval(timerInterval);
 timerInterval = null;
+      document.getElementById("walkResult").style.display = "block";
       startButton.textContent = "散歩に出かける";
       alert("お散歩おつかれさまでした！");
       return;
