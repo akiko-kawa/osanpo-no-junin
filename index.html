@@ -91,7 +91,9 @@
   let walking = false;
   let watchId = null;
   let currentMarker = null;
-
+let routeCoordinates = [];
+let routeLine = null;
+  
   const startButton = document.getElementById("startWalk");
 
   startButton.addEventListener("click", function() {
@@ -119,6 +121,16 @@
         const lng = position.coords.longitude;
 
         map.setView([lat, lng], 16);
+        routeCoordinates.push([lat, lng]);
+
+if (routeLine) {
+  routeLine.setLatLngs(routeCoordinates);
+} else {
+  routeLine = L.polyline(routeCoordinates, {
+    color: "#78836b",
+    weight: 5
+  }).addTo(map);
+}
 
         if (currentMarker) {
           currentMarker.setLatLng([lat, lng]);
