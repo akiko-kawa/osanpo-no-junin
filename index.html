@@ -88,31 +88,59 @@
     attribution: '&copy; OpenStreetMap contributors'
   }).addTo(map);
 
-document.getElementById("startWalk").addEventListener("click", function() {
+  let walking = false;
+  let watchId = null;
+  let currentMarker = null;
 
-  if (!navigator.geolocation) {
-    alert("この端末では位置情報が使えません。");
-    return;
-  }
+  const startButton = document.getElementById("startWalk");
 
-  navigator.geolocation.getCurrentPosition(
-    function(position) {
-      const lat = position.coords.latitude;
-      const lng = position.coords.longitude;
+  startButton.addEventListener("click", function() {
 
-      map.setView([lat, lng], 16);
-
-      L.marker([lat, lng])
-        .addTo(map)
-        .bindPopup("ここが現在地です！")
-        .openPopup();
-    },
-    function() {
-      alert("現在地を取得できませんでした。位置情報の使用を許可してください。");
+    if (walking) {
+      walking = false;
+      navigator.geolocation.clearWatch(watchId);
+      watchId = null;
+      startButton.textContent = "散歩に出かける";
+      alert("お散歩おつかれさまでした！");
+      return;
     }
-  );
 
-});
+    if (!navigator.geolocation) {
+      alert("この端末では位置情報が使えません。");
+      return;
+    }
+
+    walking = true;
+    startButton.textContent = "散歩を終了する";
+
+    watchId = navigator.geolocation.watchPosition(
+      function(position) {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+
+        map.setView([lat, lng], 16);
+
+        if (currentMarker) {
+          currentMarker.setLatLng([lat, lng]);
+        } else {
+          currentMarker = L.marker([lat, lng]).addTo(map);
+        }
+
+        currentMarker.bindPopup("ここが現在地です！");
+      },
+      function() {
+        alert("現在地を取得できませんでした。");
+        walking = false;
+        navigator.geolocation.clearWatch(watchId);
+        watchId = null;
+        startButton.textContent = "散歩に出かける";
+      },
+      {
+        enableHighAccuracy: true
+      }
+    );
+
+  });
 </script>
 </body>
 </html>
