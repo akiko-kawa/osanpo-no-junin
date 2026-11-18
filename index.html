@@ -88,9 +88,31 @@
     attribution: '&copy; OpenStreetMap contributors'
   }).addTo(map);
 
-  document.getElementById("startWalk").addEventListener("click", function() {
-    alert("お散歩に出かけましょう！");
-  });
+document.getElementById("startWalk").addEventListener("click", function() {
+
+  if (!navigator.geolocation) {
+    alert("この端末では位置情報が使えません。");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    function(position) {
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+
+      map.setView([lat, lng], 16);
+
+      L.marker([lat, lng])
+        .addTo(map)
+        .bindPopup("ここが現在地です！")
+        .openPopup();
+    },
+    function() {
+      alert("現在地を取得できませんでした。位置情報の使用を許可してください。");
+    }
+  );
+
+});
 </script>
 </body>
 </html>
