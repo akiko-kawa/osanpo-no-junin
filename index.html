@@ -119,6 +119,11 @@ let routeLine = null;
   let totalDistance = 0;
 let startTime = null;
 let timerInterval = null;
+  document.getElementById("resultDistance").textContent =
+  document.getElementById("distance").textContent;
+
+document.getElementById("resultElapsed").textContent =
+  document.getElementById("elapsed").textContent;
   function calculateDistance(lat1, lng1, lat2, lng2) {
   const R = 6371;
   const rad = Math.PI / 180;
