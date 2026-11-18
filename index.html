@@ -99,7 +99,11 @@
     <div id="resultElapsed" style="font-size: 28px;">00:00:00</div>
   </div>
 </div>
-
+<div id="historyArea" style="background: white; padding: 20px; border-radius: 16px; margin: 15px 0;">
+  <h2 style="font-size: 18px;">お散歩の記録</h2>
+  <div id="historyList">まだ記録はありません。</div>
+</div>
+    
 <button id="startWalk">散歩に出かける</button>
     <button class="secondary">コースを設定する</button>
   </div>
@@ -119,6 +123,7 @@ let routeLine = null;
   let totalDistance = 0;
 let startTime = null;
 let timerInterval = null;
+  let walkHistory = JSON.parse(localStorage.getItem("walkHistory")) || [];
  
   function calculateDistance(lat1, lng1, lat2, lng2) {
   const R = 6371;
@@ -138,6 +143,33 @@ let timerInterval = null;
   return R * c * 1000;
 }
   
+function showHistory() {
+  const historyList = document.getElementById("historyList");
+
+  if (walkHistory.length === 0) {
+    historyList.textContent = "まだ記録はありません。";
+    return;
+  }
+
+  historyList.innerHTML = "";
+
+  walkHistory.slice().reverse().forEach(function(record) {
+    const item = document.createElement("div");
+
+    item.style.padding = "15px 0";
+    item.style.borderBottom = "1px solid #eee";
+
+    item.innerHTML = `
+      <div style="font-size:13px; color:#888;">${record.date}</div>
+      <div>距離：${record.distance}</div>
+      <div>時間：${record.elapsed}</div>
+    `;
+
+    historyList.appendChild(item);
+  });
+}
+
+showHistory();
   const startButton = document.getElementById("startWalk");
 
   startButton.addEventListener("click", function() {
@@ -153,6 +185,16 @@ timerInterval = null;
 
 document.getElementById("resultElapsed").textContent =
   document.getElementById("elapsed").textContent;
+      const walkRecord = {
+  date: new Date().toLocaleString("ja-JP"),
+  distance: document.getElementById("distance").textContent,
+  elapsed: document.getElementById("elapsed").textContent
+};
+
+walkHistory.push(walkRecord);
+
+localStorage.setItem("walkHistory", JSON.stringify(walkHistory));
+      showHistory();
       
       document.getElementById("walkResult").style.display = "block";
       startButton.textContent = "散歩に出かける";
@@ -167,6 +209,14 @@ document.getElementById("resultElapsed").textContent =
 
     walking = true;
     startButton.textContent = "散歩を終了する";
+    totalDistance = 0;
+lastPosition = null;
+routeCoordinates = [];
+routeLine = null;
+
+document.getElementById("distance").textContent = "0.00 km";
+document.getElementById("elapsed").textContent = "00:00:00";
+document.getElementById("walkResult").style.display = "none";
 
     startTime = Date.now();
 
