@@ -64,6 +64,8 @@
       color: #55564e;
     }
   </style>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
   <div class="container">
@@ -74,11 +76,18 @@
       今日も、あの人に会いに行こう。<br>
       いつもの道の、その先へ。
     </div>
+    <div id="map" style="height: 400px; margin: 20px 0; border-radius: 16px;"></div>
 
 <button id="startWalk">散歩に出かける</button>
     <button class="secondary">コースを設定する</button>
   </div>
 <script>
+  const map = L.map("map").setView([35.0, 137.0], 13);
+
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
   document.getElementById("startWalk").addEventListener("click", function() {
     alert("お散歩に出かけましょう！");
   });
